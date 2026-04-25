@@ -1,0 +1,22 @@
+@using EarthaquakeApplication.Entities
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+<ul class="navbar-nav" style="flex-direction:row;align-items:center;gap:4px">
+  @if (SignInManager.IsSignedIn(User))
+  {
+    var cu = await UserManager.GetUserAsync(User);
+    var name = (cu != null && !string.IsNullOrEmpty(cu.FirstName)) ? $"{cu.FirstName} {cu.LastName}" : UserManager.GetUserName(User);
+    <li class="nav-item"><span class="navbar-user-info">👤 @name</span></li>
+    <li class="nav-item">
+      <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/Account/Login",new{area="Identity"})" method="post">
+        <button type="submit" class="nav-link btn btn-link" id="logout-btn">🚪 Çıkış</button>
+      </form>
+    </li>
+  }
+  else
+  {
+    <li class="nav-item"><a class="nav-link" href="/Identity/Account/Login" id="login-link">Giriş</a></li>
+    <li class="nav-item"><a class="nav-link" href="/Identity/Account/Register" id="register-link">Kayıt Ol</a></li>
+  }
+</ul>

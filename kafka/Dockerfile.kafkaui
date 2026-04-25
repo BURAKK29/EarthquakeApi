@@ -1,0 +1,6 @@
+FROM eclipse-temurin:17-jre-jammy
+WORKDIR /app
+COPY kafka-ui-api-v0.7.2.jar .
+COPY application.yml application.yml
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","kafka-ui-api-v0.7.2.jar","--spring.config.location=file:application.yml"]

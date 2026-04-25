@@ -1,0 +1,110 @@
+@model List<EarthaquakeApplication.Entities.EarthquakeModel>
+@{
+    ViewData["Title"] = "Son Depremler";
+    var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Istanbul");
+    int total = Model?.Count ?? 0;
+    int sig = 0; double maxM = 0;
+    if (Model != null) foreach (var e in Model) {
+        if (float.TryParse(e.Magnitude, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out float m)) {
+            if (m >= 3.5f) sig++;
+            if (m > maxM) maxM = m;
+        }
+    }
+    string MagClass(string mag) {
+        if (float.TryParse(mag, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out float m)) {
+            if (m >= 5f) return "mag-severe";
+            if (m >= 4f) return "mag-high";
+            if (m >= 3f) return "mag-medium";
+        }
+        return "mag-low";
+    }
+}
+<div class="page-wrapper">
+  <div class="section-header">
+    <h1 class="section-title">🌐 Son Depremler</h1>
+    <p class="section-subtitle">AFAD verisi · her 5 dakikada otomatik güncelleme · Türkiye saati (UTC+3)</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-value">@total</div>
+      <div class="stat-label">Toplam Kayıt</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:#fbbf24">@sig</div>
+      <div class="stat-label">≥ 3.5 Büyüklük</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:@(maxM>=4?"#f87171":"#34d399")">@maxM.ToString("F1")</div>
+      <div class="stat-label">Maks. Büyüklük</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:#06b6d4;font-size:1.05rem">
+        @(Model?.Any()==true ? TimeZoneInfo.ConvertTimeFromUtc(Model.First().Date,tz).ToString("HH:mm") : "—")
+      </div>
+      <div class="stat-label">Son Güncelleme</div>
+    </div>
+  </div>
+
+  <form asp-controller="EarthquakeList" asp-action="Index" method="get">
+    <div class="filter-bar">
+      <div class="filter-group" style="max-width:180px">
+        <label class="filter-label">Min. Büyüklük</label>
+        <input type="number" id="minMagnitude" name="minMagnitude" class="form-control" value="@ViewBag.MinMagnitude" step="0.1" min="0" max="10" placeholder="örn: 3.5" />
+      </div>
+      <div class="filter-group" style="flex:2;max-width:360px">
+        <label class="filter-label">Konum Filtresi</label>
+        <input type="text" id="location" name="location" class="form-control" value="@ViewBag.Location" placeholder="örn: Hatay, İzmir, Van..." />
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+        <button type="submit" class="btn btn-primary" id="search-btn">🔍 Ara</button>
+        <a asp-controller="EarthquakeList" asp-action="Index" class="btn btn-secondary" id="clear-btn">✕ Temizle</a>
+      </div>
+    </div>
+  </form>
+
+  <div class="glass-card">
+    <div class="card-header-custom">
+      <span class="card-header-icon">📋</span>
+      Deprem Listesi
+      @if (!string.IsNullOrEmpty(ViewBag.Location?.ToString()) || ViewBag.MinMagnitude != null)
+      {
+        <span style="margin-left:auto;font-size:.75rem;color:#06b6d4;font-weight:400">Filtreli: @total kayıt</span>
+      }
+    </div>
+    @if (Model?.Any() == true)
+    {
+      <table class="data-table" id="earthquakes-table">
+        <thead><tr>
+          <th>Konum / İlçe</th>
+          <th><a asp-action="Index" asp-route-sortOrder="@ViewBag.MagnitudeSort" asp-route-minMagnitude="@ViewBag.MinMagnitude" asp-route-location="@ViewBag.Location">Büyüklük @(ViewBag.CurrentSort=="magnitude_asc"?"▲":ViewBag.CurrentSort=="magnitude_desc"?"▼":"")</a></th>
+          <th><a asp-action="Index" asp-route-sortOrder="@ViewBag.DepthSort" asp-route-minMagnitude="@ViewBag.MinMagnitude" asp-route-location="@ViewBag.Location">Derinlik @(ViewBag.CurrentSort=="depth_asc"?"▲":ViewBag.CurrentSort=="depth_desc"?"▼":"")</a></th>
+          <th><a asp-action="Index" asp-route-sortOrder="@ViewBag.DateSort" asp-route-minMagnitude="@ViewBag.MinMagnitude" asp-route-location="@ViewBag.Location">Tarih / Saat (TR) @(ViewBag.CurrentSort=="date_asc"?"▲":ViewBag.CurrentSort=="date_desc"?"▼":"")</a></th>
+        </tr></thead>
+        <tbody>
+          @foreach (var eq in Model)
+          {
+            var trDate = TimeZoneInfo.ConvertTimeFromUtc(eq.Date, tz);
+            <tr>
+              <td>
+                <div class="location-primary">@eq.Location</div>
+                @if (!string.IsNullOrEmpty(eq.District) && eq.District != eq.Location)
+                { <div class="location-secondary">@eq.District</div> }
+              </td>
+              <td><span class="mag-badge @MagClass(eq.Magnitude??"0")">@eq.Magnitude</span></td>
+              <td><span class="depth-pill">@eq.Depth km</span></td>
+              <td style="color:#94a3b8;font-size:.82rem;font-variant-numeric:tabular-nums">@trDate.ToString("dd.MM.yyyy HH:mm")</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+    else
+    {
+      <div class="empty-state">
+        <div class="empty-state-icon">🔍</div>
+        <div class="empty-state-text">Gösterilecek deprem bulunamadı. Filtreleri değiştirip tekrar deneyin.</div>
+      </div>
+    }
+  </div>
+</div>

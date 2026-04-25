@@ -1,0 +1,11 @@
+@EarthquakeApi_HostAddress = http://localhost:5288
+
+GET {{EarthquakeApi_HostAddress}}/todos/
+Accept: application/json
+
+###
+
+GET {{EarthquakeApi_HostAddress}}/todos/1
+Accept: application/json
+
+###

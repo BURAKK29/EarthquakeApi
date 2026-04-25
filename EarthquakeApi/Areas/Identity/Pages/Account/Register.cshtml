@@ -1,0 +1,88 @@
+@page
+@using EarthquakeApiProject.Areas.Identity.Pages.Account
+@model RegisterModel
+@{ ViewData["Title"] = "Kayıt Ol"; Layout = "_Layout"; }
+<div class="auth-wrapper">
+  <div class="auth-card wide">
+    <div class="auth-logo">
+      <span class="auth-logo-icon">🌍</span>
+      <div class="auth-logo-title">Deprem İzleme Sistemi</div>
+      <div class="auth-logo-sub">AFAD Entegrasyonlu Uyarı Platformu</div>
+    </div>
+    <div class="auth-title">Yeni Hesap Oluşturun</div>
+    <div class="auth-subtitle">Deprem uyarıları almak için kayıt olun</div>
+    <hr class="auth-divider" />
+    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+      <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+      <div class="form-row-2" style="margin-bottom:13px">
+        <div class="filter-group">
+          <label class="filter-label">Ad</label>
+          <input asp-for="Input.FirstName" class="form-control" id="register-firstname" placeholder="Adınız" />
+          <span asp-validation-for="Input.FirstName" class="field-validation-error"></span>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Soyad</label>
+          <input asp-for="Input.LastName" class="form-control" id="register-lastname" placeholder="Soyadınız" />
+          <span asp-validation-for="Input.LastName" class="field-validation-error"></span>
+        </div>
+      </div>
+      <div class="form-row-2" style="margin-bottom:13px">
+        <div class="filter-group">
+          <label class="filter-label">E-posta</label>
+          <input asp-for="Input.Email" class="form-control" id="register-email" autocomplete="username" placeholder="ornek@email.com" />
+          <span asp-validation-for="Input.Email" class="field-validation-error"></span>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Telefon</label>
+          <input asp-for="Input.PhoneNumber" class="form-control" id="register-phone" placeholder="05xx xxx xx xx" />
+          <span asp-validation-for="Input.PhoneNumber" class="field-validation-error"></span>
+        </div>
+      </div>
+      <div class="form-row-2" style="margin-bottom:13px">
+        <div class="filter-group">
+          <label class="filter-label">Şifre</label>
+          <input asp-for="Input.Password" class="form-control" id="register-password" autocomplete="new-password" placeholder="••••••••" />
+          <span asp-validation-for="Input.Password" class="field-validation-error"></span>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Şifre Tekrar</label>
+          <input asp-for="Input.ConfirmPassword" class="form-control" id="register-confirm-password" autocomplete="new-password" placeholder="••••••••" />
+          <span asp-validation-for="Input.ConfirmPassword" class="field-validation-error"></span>
+        </div>
+      </div>
+      <div class="form-row-2" style="margin-bottom:13px">
+        <div class="filter-group">
+          <label class="filter-label">İl / Şehir</label>
+          <input asp-for="Input.Province" class="form-control" id="register-province" placeholder="örn: İstanbul" />
+          <span asp-validation-for="Input.Province" class="field-validation-error"></span>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Ülke</label>
+          <input asp-for="Input.Country" class="form-control" id="register-country" placeholder="örn: Türkiye" />
+          <span asp-validation-for="Input.Country" class="field-validation-error"></span>
+        </div>
+      </div>
+      <div class="form-row-2" style="margin-bottom:22px">
+        <div class="filter-group">
+          <label class="filter-label">Doğum Tarihi</label>
+          <input asp-for="Input.Birthday" class="form-control" id="register-birthday" type="date" />
+          <span asp-validation-for="Input.Birthday" class="field-validation-error"></span>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Cinsiyet</label>
+          <select asp-for="Input.Gender" class="form-control form-select" id="register-gender">
+            <option value="">Seçiniz</option>
+            <option value="Male">Erkek</option>
+            <option value="Female">Kadın</option>
+          </select>
+          <span asp-validation-for="Input.Gender" class="field-validation-error"></span>
+        </div>
+      </div>
+      <button id="registerSubmit" type="submit" class="btn btn-primary w-100 btn-lg">✓ Kayıt Ol</button>
+    </form>
+    <div class="auth-footer">
+      <div>Zaten hesabınız var mı? <a asp-page="./Login" class="auth-link">Giriş Yap</a></div>
+    </div>
+  </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

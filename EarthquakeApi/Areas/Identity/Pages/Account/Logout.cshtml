@@ -1,0 +1,17 @@
+﻿@page
+@using EarthquakeApi.Areas.Identity.Pages.Account
+@model LogoutModel
+@{
+    ViewData["Title"] = "Log out";
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+    <form method="post" id="logoutForm" asp-page-handler="Post">
+        <button type="submit" class="btn btn-danger">Logout</button>
+    </form>
+}
+else
+{
+    <p>You have successfully logged out of the application.</p>
+}

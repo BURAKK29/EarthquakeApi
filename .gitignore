@@ -1,0 +1,118 @@
+## ── Proje Secret Dosyaları (GERÇEk ŞİFRELER - KESİNLİKLE COMMIT ETME) ─────
+
+# Bu dosyalar gerçek şifre/credential içeriyor
+EarthquakeApi/appsettings.json
+docker-compose.yml
+clean.yml
+
+## ── .NET Core / ASP.NET ──────────────────────────────────────────────────────
+
+# Build outputs
+bin/
+obj/
+out/
+
+# Publish output
+publish/
+**/publish/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+!**/packages/repositories.config
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# Visual Studio Code
+.vscode/
+
+# MSBuild
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Razor / MVC compiled views
+/MvcBuildViews/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Entity Framework migrations (uncomment if you prefer not to commit them)
+# **/Migrations/
+
+# dotnet user-secrets
+**/secrets.json
+
+# Test results
+TestResults/
+*.trx
+*.coveragexml
+coverage/
+*.coverage
+
+# dotnet tools
+.dotnet/
+
+## ── Docker ───────────────────────────────────────────────────────────────────
+
+# Never commit real .env files with secrets
+.env
+.env.*
+!.env.example
+
+# Docker override files (local dev only)
+docker-compose.override.yml
+
+## ── Runtime / Logs ───────────────────────────────────────────────────────────
+
+logs/
+*.log
+*.tmp
+*.temp
+
+# ASP.NET Data Protection keys (auto-generated at runtime)
+DataProtection-Keys/
+
+## ── OS ───────────────────────────────────────────────────────────────────────
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+## ── Miscellaneous ────────────────────────────────────────────────────────────
+
+# JetBrains Rider
+*.DotSettings.user
+
+# NCrunch
+*.ncrunch*
+_NCrunch_*
+
+# BenchmarkDotNet
+BenchmarkDotNet.Artifacts/
+
+# Node (if any front-end tooling)
+node_modules/
+npm-debug.log*
+yarn-error.log*

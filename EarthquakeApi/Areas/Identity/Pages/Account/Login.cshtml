@@ -1,0 +1,39 @@
+@page
+@using EarthquakeApi.Areas.Identity.Pages.Account
+@model EarthquakeApi.Areas.Identity.Pages.Account.LoginModel
+@{ ViewData["Title"] = "Giriş Yap"; Layout = "_Layout"; }
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <span class="auth-logo-icon">🌍</span>
+      <div class="auth-logo-title">Deprem İzleme Sistemi</div>
+      <div class="auth-logo-sub">AFAD Entegrasyonlu Uyarı Platformu</div>
+    </div>
+    <div class="auth-title">Hesabınıza Giriş Yapın</div>
+    <div class="auth-subtitle">Deprem bildirimlerini takip etmek için oturum açın</div>
+    <hr class="auth-divider" />
+    <form id="account" method="post">
+      <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+      <div class="filter-group" style="margin-bottom:14px">
+        <label class="filter-label">E-posta Adresi</label>
+        <input asp-for="Input.Email" class="form-control" id="login-email" autocomplete="username" aria-required="true" placeholder="ornek@email.com" />
+        <span asp-validation-for="Input.Email" class="field-validation-error"></span>
+      </div>
+      <div class="filter-group" style="margin-bottom:14px">
+        <label class="filter-label">Şifre</label>
+        <input asp-for="Input.Password" class="form-control" id="login-password" autocomplete="current-password" aria-required="true" placeholder="••••••••" />
+        <span asp-validation-for="Input.Password" class="field-validation-error"></span>
+      </div>
+      <div style="margin-bottom:18px;display:flex;align-items:center;gap:8px">
+        <input class="form-check-input" asp-for="Input.RememberMe" id="remember-me" />
+        <label for="remember-me" style="font-size:.84rem;color:#94a3b8;cursor:pointer">Beni hatırla</label>
+      </div>
+      <button id="login-submit" type="submit" class="btn btn-primary w-100 btn-lg">🔑 Giriş Yap</button>
+    </form>
+    <div class="auth-footer">
+      <div><a id="forgot-password" asp-page="./ForgotPassword" class="auth-link">Şifremi unuttum</a></div>
+      <div>Hesabınız yok mu? <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="auth-link">Kayıt Ol</a></div>
+    </div>
+  </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

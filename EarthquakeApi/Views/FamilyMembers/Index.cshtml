@@ -1,0 +1,96 @@
+@model EarthaquakeApplication.FilterViewModel.FamilyMembersViewModel
+@{ ViewData["Title"] = "Aile Üyeleri"; var membersJsonString = TempData["MembersForMapJson"] as string ?? "[]"; }
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<div class="page-wrapper">
+  <div class="section-header">
+    <h1 class="section-title">👨‍👩‍👧 Aile Üyeleri</h1>
+    <p class="section-subtitle">Yakınlarınızı ekleyin — büyüklük ≥ 3.5 depremde otomatik e-posta uyarısı alırsınız</p>
+  </div>
+  <div class="row g-4 mb-4">
+    <div class="col-lg-4">
+      <div class="glass-card h-100">
+        <div class="card-header-custom"><span class="card-header-icon">➕</span>Yeni Üye Ekle</div>
+        <div style="padding:22px">
+          <form asp-action="Add" method="post" novalidate>
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+            <div class="filter-group" style="margin-bottom:14px">
+              <label class="filter-label">Ad</label>
+              <input asp-for="NewMember.FirstName" class="form-control" placeholder="Adı giriniz" />
+              <span asp-validation-for="NewMember.FirstName" class="field-validation-error"></span>
+            </div>
+            <div class="filter-group" style="margin-bottom:14px">
+              <label class="filter-label">Soyad</label>
+              <input asp-for="NewMember.LastName" class="form-control" placeholder="Soyadı giriniz" />
+              <span asp-validation-for="NewMember.LastName" class="field-validation-error"></span>
+            </div>
+            <div class="filter-group" style="margin-bottom:14px">
+              <label class="filter-label">İl / Şehir</label>
+              <input asp-for="NewMember.Province" class="form-control" placeholder="örn: İstanbul, Ankara..." />
+              <span asp-validation-for="NewMember.Province" class="field-validation-error"></span>
+            </div>
+            <div class="filter-group" style="margin-bottom:22px">
+              <label class="filter-label">Ülke</label>
+              <input asp-for="NewMember.Country" class="form-control" placeholder="örn: Türkiye" />
+              <span asp-validation-for="NewMember.Country" class="field-validation-error"></span>
+            </div>
+            <button type="submit" class="btn btn-success w-100" id="add-member-btn">✓ Üye Ekle</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="glass-card h-100">
+        <div class="card-header-custom"><span class="card-header-icon">🗺️</span>Aile Üyeleri Haritası</div>
+        <div id="familyMap"></div>
+      </div>
+    </div>
+  </div>
+  <div class="glass-card">
+    <div class="card-header-custom">
+      <span class="card-header-icon">📋</span>Kayıtlı Üyeler
+      <span style="margin-left:auto;font-size:.75rem;color:#06b6d4;font-weight:400">@(Model.ExistingMembers?.Count()??0) üye</span>
+    </div>
+    @if (Model.ExistingMembers?.Any() == true)
+    {
+      <table class="data-table" id="members-table">
+        <thead><tr><th>İsim</th><th>İl</th><th>Ülke</th><th style="width:110px"></th></tr></thead>
+        <tbody>
+          @foreach (var m in Model.ExistingMembers)
+          {
+            var ini = ((m.FirstName?.Length>0?m.FirstName[0].ToString():"")+(m.LastName?.Length>0?m.LastName[0].ToString():"")).ToUpper();
+            <tr>
+              <td><div class="member-cell"><span class="member-avatar">@ini</span>@m.FullName</div></td>
+              <td style="color:#94a3b8">📍 @m.Province</td>
+              <td style="color:#475569;font-size:.82rem">@m.Country</td>
+              <td>
+                <form asp-action="Delete" asp-controller="FamilyMembers" method="post" style="display:inline" onsubmit="return confirm('Bu üyeyi silmek istiyor musunuz?');">
+                  <input type="hidden" name="id" value="@m.Id" />
+                  <button type="submit" class="btn btn-sm btn-outline-danger" id="del-@m.Id">🗑 Sil</button>
+                </form>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+    else
+    {
+      <div class="empty-state">
+        <div class="empty-state-icon">👥</div>
+        <div class="empty-state-text">Henüz aile üyesi eklenmemiş. Sol formu kullanarak ekleyebilirsiniz.</div>
+      </div>
+    }
+  </div>
+</div>
+@section Scripts {
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  @{ await Html.PartialAsync("~/Views/Shared/_ValidationScriptsPartial.cshtml"); }
+  <script src="~/js/turkeyCities.js"></script>
+  <script src="~/js/familyMapInitializer.js"></script>
+  <script>
+    const membersDataJson = '@Html.Raw(membersJsonString)';
+    let membersData = [];
+    try { membersData = JSON.parse(membersDataJson); } catch(e) {}
+    initializeFamilyMapWithMembers(membersData);
+  </script>
+}

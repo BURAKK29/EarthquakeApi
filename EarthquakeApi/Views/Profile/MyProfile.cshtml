@@ -1,0 +1,84 @@
+@model EarthaquakeApplication.Entities.ApplicationUser
+@{
+    ViewData["Title"] = "Profilim";
+    string NotSet(string val) => string.IsNullOrEmpty(val) ? "<span class='profile-not-set'>Belirtilmemiş</span>" : System.Web.HttpUtility.HtmlEncode(val);
+}
+
+<div class="page-wrapper">
+  <div class="section-header">
+    <h1 class="section-title">⚙️ Profilim</h1>
+    <p class="section-subtitle">Sistemde kayıtlı kişisel bilgileriniz</p>
+  </div>
+
+  <div style="max-width:680px;margin:0 auto">
+
+    <!-- Avatar + name card -->
+    <div class="glass-card" style="margin-bottom:20px">
+      <div style="padding:32px;display:flex;align-items:center;gap:24px">
+        <div style="
+          width:72px;height:72px;border-radius:50%;flex-shrink:0;
+          background:linear-gradient(135deg,#3b82f6,#06b6d4);
+          display:flex;align-items:center;justify-content:center;
+          font-size:1.8rem;font-weight:800;color:#fff;
+          box-shadow:0 8px 24px rgba(59,130,246,.4)
+        ">
+          @((Model.FirstName?.Length > 0 ? Model.FirstName[0].ToString() : "?").ToUpper())
+        </div>
+        <div>
+          <div style="font-size:1.3rem;font-weight:700;color:#f1f5f9;letter-spacing:-.02em">
+            @Model.FirstName @Model.LastName
+          </div>
+          <div style="font-size:.875rem;color:#94a3b8;margin-top:3px">@Model.Email</div>
+          <div style="margin-top:8px">
+            <span style="
+              display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600;
+              background:rgba(16,185,129,.14);color:#34d399;border:1px solid rgba(16,185,129,.25)
+            ">✓ Aktif Kullanıcı</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info table card -->
+    <div class="glass-card">
+      <div class="card-header-custom">
+        <span class="card-header-icon">📋</span>
+        Kişisel Bilgiler
+      </div>
+      <div style="padding:4px 0">
+
+        @{
+            var rows = new[] {
+                ("👤", "Ad",           Model.FirstName),
+                ("👤", "Soyad",        Model.LastName),
+                ("✉️", "E-posta",      Model.Email),
+                ("📱", "Telefon",      Model.PhoneNumber),
+                ("📍", "İl / Şehir",  Model.Province),
+                ("🌍", "Ülke",         Model.Country),
+                ("🎂", "Doğum Tarihi", Model.Birthday.HasValue ? Model.Birthday.Value.ToString("dd.MM.yyyy") : null),
+                ("⚧",  "Cinsiyet",    Model.Gender),
+            };
+        }
+
+        @foreach (var (icon, label, value) in rows)
+        {
+            <div style="
+              display:flex;align-items:center;
+              padding:14px 20px;
+              border-bottom:1px solid rgba(255,255,255,.05);
+              transition:background .2s
+            " onmouseover="this.style.background='rgba(59,130,246,.05)'" onmouseout="this.style.background=''">
+              <div style="width:34%;display:flex;align-items:center;gap:10px;color:#94a3b8;font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em">
+                <span>@icon</span> @label
+              </div>
+              <div style="color:@(string.IsNullOrEmpty(value) ? "#475569" : "#f1f5f9");font-size:.9rem;font-style:@(string.IsNullOrEmpty(value) ? "italic" : "normal")">
+                @(string.IsNullOrEmpty(value) ? "Belirtilmemiş" : value)
+              </div>
+            </div>
+        }
+
+      </div>
+    </div>
+
+  </div>
+</div>
