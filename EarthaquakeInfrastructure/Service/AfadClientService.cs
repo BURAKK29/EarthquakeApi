@@ -15,12 +15,9 @@ public class AfadClientService : IAfadClientService
 
     public async Task<List<EarthquakeModel>> GetEarthquakesAsync()
     {
-        // AFAD API Türkiye saatiyle (UTC+3) çalışır; UTC ile sorgularsak 3 saat eksik veri alırız
-        var turkeyZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Istanbul");
-        var nowTr = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, turkeyZone);
-
-        string start = Uri.EscapeDataString(nowTr.AddMinutes(-120).ToString("yyyy-MM-dd HH:mm:ss"));
-        string end   = Uri.EscapeDataString(nowTr.ToString("yyyy-MM-dd HH:mm:ss"));
+        var nowUtc = DateTime.UtcNow;
+        string start = Uri.EscapeDataString(nowUtc.AddMinutes(-120).ToString("yyyy-MM-dd HH:mm:ss"));
+        string end   = Uri.EscapeDataString(nowUtc.ToString("yyyy-MM-dd HH:mm:ss"));
 
         string url = $"https://deprem.afad.gov.tr/apiv2/event/filter?start={start}&end={end}";
 
