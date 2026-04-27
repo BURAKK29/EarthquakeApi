@@ -1,6 +1,5 @@
 @model EarthaquakeApplication.FilterViewModel.FamilyMembersViewModel
 @{ ViewData["Title"] = "Aile Üyeleri"; var membersJsonString = TempData["MembersForMapJson"] as string ?? "[]"; }
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
 <div class="page-wrapper">
   <div class="section-header">
     <h1 class="section-title">👨‍👩‍👧 Aile Üyeleri</h1>
@@ -12,7 +11,7 @@
         <div class="card-header-custom"><span class="card-header-icon">➕</span>Yeni Üye Ekle</div>
         <div style="padding:22px">
           <form asp-action="Add" method="post" novalidate>
-            <div asp-validation-summary="All" class="alert alert-danger"></div>
+            @* <div asp-validation-summary="All" class="alert alert-danger"></div> *@
             <div class="filter-group" style="margin-bottom:14px">
               <label class="filter-label">Ad</label>
               <input asp-for="NewMember.FirstName" class="form-control" placeholder="Adı giriniz" />
@@ -83,14 +82,11 @@
   </div>
 </div>
 @section Scripts {
-  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
   @{ await Html.PartialAsync("~/Views/Shared/_ValidationScriptsPartial.cshtml"); }
   <script src="~/js/turkeyCities.js"></script>
   <script src="~/js/familyMapInitializer.js"></script>
   <script>
-    const membersDataJson = '@Html.Raw(membersJsonString)';
-    let membersData = [];
-    try { membersData = JSON.parse(membersDataJson); } catch(e) {}
+    const membersData = @Html.Raw(membersJsonString);
     initializeFamilyMapWithMembers(membersData);
   </script>
 }

@@ -14,9 +14,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-sA+e2U8mRz+2GVMOYXgjC+U2/h4JGSyYbXK4fC0pItY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-DvNbU4BCCDqv6brU6uyjHf1QXUL3Z7hM6UYGZwYy0vM=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
 </head>
 <body>
 
@@ -30,6 +30,8 @@
 
             <div class="site-nav-links">
                 <a class="site-nav-link" asp-controller="EarthquakeList" asp-action="Index">🗺️ Depremler</a>
+                <a class="site-nav-link" asp-controller="Analytics" asp-action="Index">📊 Analizler</a>
+                <a class="site-nav-link" asp-controller="Analytics" asp-action="Heatmap">🔥 Isı Haritası</a>
                 <a class="site-nav-link" asp-controller="FamilyMembers" asp-action="Index">👨‍👩‍👧 Aile Üyeleri</a>
                 <a class="site-nav-link" asp-controller="Profile" asp-action="MyProfile">⚙️ Profilim</a>
             </div>

@@ -1,0 +1,189 @@
+@model EarthaquakeApplication.FilterViewModel.AnalyticsViewModel
+@{ ViewData["Title"] = "İstatistikler ve Analizler"; }
+
+<div class="page-wrapper">
+    <div class="section-header">
+        <h1 class="section-title">📊 Deprem Analizleri</h1>
+        <p class="text-light">Türkiye genelindeki sismik aktivitenin canlı istatistikleri ve trendleri</p>
+    </div>
+
+    <!-- Özet Kartları -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="glass-card text-center h-100" style="padding: 1.5rem;">
+                <div style="font-size: 2.5rem; color: #3b82f6;">📉</div>
+                <h3 style="font-weight: 700; color: #f8fafc; font-size: 2rem; margin: 10px 0;">@Model.TotalEarthquakes</h3>
+                <p style="color: #94a3b8; margin: 0; font-size: 0.95rem;">Kayıtlı Toplam Deprem</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card text-center h-100" style="padding: 1.5rem;">
+                <div style="font-size: 2.5rem; color: #ef4444;">🚨</div>
+                <h3 style="font-weight: 700; color: #f8fafc; font-size: 2rem; margin: 10px 0;">@Model.MaxMagnitude</h3>
+                <p style="color: #94a3b8; margin: 0; font-size: 0.95rem;">Kaydedilen En Yüksek Şiddet</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card text-center h-100" style="padding: 1.5rem;">
+                <div style="font-size: 2.5rem; color: #10b981;">📊</div>
+                <h3 style="font-weight: 700; color: #f8fafc; font-size: 2rem; margin: 10px 0;">@Model.AverageMagnitude</h3>
+                <p style="color: #94a3b8; margin: 0; font-size: 0.95rem;">Ortalama Deprem Şiddeti</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grafikler -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mb-4 mb-lg-0">
+            <div class="glass-card h-100">
+                <div class="card-header-custom">
+                    <span class="card-header-icon">📈</span>Son 7 Günün Trendi
+                </div>
+                <div style="padding: 1.5rem; height: 350px;">
+                    <canvas id="dailyTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="glass-card h-100">
+                <div class="card-header-custom">
+                    <span class="card-header-icon">📍</span>En Aktif İller
+                </div>
+                <div style="padding: 1.5rem; height: 350px; display:flex; justify-content:center;">
+                    <canvas id="topCitiesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Son 10 Deprem Tablosu -->
+    <div class="glass-card">
+        <div class="card-header-custom">
+            <span class="card-header-icon">⚡</span>En Son Eklenen Depremler
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Tarih</th>
+                    <th>Konum</th>
+                    <th>Şiddet</th>
+                    <th>Derinlik</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var eq in Model.RecentEarthquakes)
+                {
+                    <tr>
+                        <td style="color:#94a3b8">@eq.Date.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>
+                            <div class="member-cell">
+                                <span class="member-avatar" style="font-size:0.6rem; line-height: 28px;">TR</span>
+                                @eq.Location
+                            </div>
+                        </td>
+                        <td>
+                            <span class="magnitude-badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 4px 10px; border-radius: 12px; font-weight: 600; font-size: 0.85rem;">
+                                @eq.Magnitude
+                            </span>
+                        </td>
+                        <td style="color:#475569">@eq.Depth km</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Chart.js Default Koyu Tema Ayarları
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+
+        // Gelen Veriler
+        const dailyLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DailyTrends.Keys));
+        const dailyData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.DailyTrends.Values));
+
+        const cityLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopCities.Keys));
+        const cityData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopCities.Values));
+
+        // Line Chart (Trend)
+        const ctxTrend = document.getElementById('dailyTrendChart').getContext('2d');
+        
+        let gradient = ctxTrend.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');   
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+
+        new Chart(ctxTrend, {
+            type: 'line',
+            data: {
+                labels: dailyLabels,
+                datasets: [{
+                    label: 'Deprem Sayısı',
+                    data: dailyData,
+                    borderColor: '#3b82f6',
+                    backgroundColor: gradient,
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#06b6d4',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false }
+                    },
+                    x: {
+                        grid: { display: false, drawBorder: false }
+                    }
+                }
+            }
+        });
+
+        // Pie Chart (İller)
+        const ctxCities = document.getElementById('topCitiesChart').getContext('2d');
+        new Chart(ctxCities, {
+            type: 'doughnut',
+            data: {
+                labels: cityLabels,
+                datasets: [{
+                    data: cityData,
+                    backgroundColor: [
+                        '#ef4444', '#f97316', '#f59e0b', '#84cc16', '#22c55e',
+                        '#06b6d4', '#3b82f6', '#6366f1', '#a855f7', '#ec4899'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 15,
+                            color: '#e2e8f0',
+                            font: { size: 11 }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

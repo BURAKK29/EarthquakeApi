@@ -1,4 +1,4 @@
-﻿using EarthaquakeApplication.Entities;
+using EarthaquakeApplication.Entities;
 using EarthaquakeInfrastructure.Data;
 using EarthaquakeApplication.FilterViewModel;
 using Microsoft.AspNetCore.Identity;
@@ -73,6 +73,17 @@ namespace EarthquakeApi.Controllers
             ModelState.Remove("StatusMessage"); //
 
             model.NewMember.ApplicationUserId = currentUser.Id; //
+
+            // Gelen verileri Title Case (Baş Harfi Büyük) yapalım ki UI'da düzgün görünsün
+            var textInfo = new System.Globalization.CultureInfo("tr-TR").TextInfo;
+            if (!string.IsNullOrEmpty(model.NewMember.FirstName))
+                model.NewMember.FirstName = textInfo.ToTitleCase(model.NewMember.FirstName.ToLower(new System.Globalization.CultureInfo("tr-TR")));
+            if (!string.IsNullOrEmpty(model.NewMember.LastName))
+                model.NewMember.LastName = textInfo.ToTitleCase(model.NewMember.LastName.ToLower(new System.Globalization.CultureInfo("tr-TR")));
+            if (!string.IsNullOrEmpty(model.NewMember.Province))
+                model.NewMember.Province = textInfo.ToTitleCase(model.NewMember.Province.ToLower(new System.Globalization.CultureInfo("tr-TR")));
+            if (!string.IsNullOrEmpty(model.NewMember.Country))
+                model.NewMember.Country = textInfo.ToTitleCase(model.NewMember.Country.ToLower(new System.Globalization.CultureInfo("tr-TR")));
 
             if (ModelState.IsValid)
             {

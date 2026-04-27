@@ -1,0 +1,92 @@
+@{ ViewData["Title"] = "Deprem Isı Haritası"; }
+
+<div class="page-wrapper" style="height: calc(100vh - 120px); display: flex; flex-direction: column;">
+    <div class="section-header" style="margin-bottom: 1rem;">
+        <h1 class="section-title">🔥 Deprem Isı Haritası</h1>
+        <p class="text-muted">Türkiye ve çevresindeki fay hatları ile deprem yoğunluğu analizi</p>
+    </div>
+
+    <div class="glass-card" style="flex: 1; padding: 5px; position: relative;">
+        <!-- Harita Yükleniyor Göstergesi -->
+        <div id="heatmap-loading" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; z-index: 1000; background: rgba(15, 23, 42, 0.7); border-radius: 12px; backdrop-filter: blur(5px);">
+            <div class="text-center">
+                <div class="spinner-border text-info" role="status" style="width: 3rem; height: 3rem;"></div>
+                <h5 class="mt-3 text-white">Sismik Veriler Yükleniyor...</h5>
+            </div>
+        </div>
+        
+        <div id="heatmapContainer" style="width: 100%; height: 100%; border-radius: 12px; z-index: 1;"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Leaflet eklentisi (Isı Haritası için) -->
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Harita başlat
+            const map = L.map('heatmapContainer', {
+                center: [39.0, 35.0],
+                zoom: 6,
+                minZoom: 5,
+                maxBounds: [
+                    [35.0, 25.0], // Güneybatı
+                    [43.0, 45.0]  // Kuzeydoğu
+                ]
+            });
+
+            // Koyu renkli profesyonel harita katmanı
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+
+            // Verileri çek ve ısı haritasını oluştur
+            fetch('/Analytics/GetHeatmapData')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('heatmap-loading').style.display = 'none';
+
+                    // [lat, lng, intensity] formatına dönüştür
+                    // intensity (yoğunluk) depremin şiddetine göre ayarlanıyor
+                    const heatPoints = data.map(eq => {
+                        const lat = parseFloat(eq.lat);
+                        const lng = parseFloat(eq.lng);
+                        const mag = parseFloat(eq.mag);
+                        
+                        if (isNaN(lat) || isNaN(lng) || isNaN(mag)) return null;
+
+                        // Şiddete göre haritadaki etki çarpanı (Örn: 7.0 şiddeti devasa gözükür)
+                        let intensity = mag / 10.0;
+                        if(mag >= 5.0) intensity *= 2; 
+                        
+                        return [lat, lng, intensity];
+                    }).filter(p => p !== null);
+
+                    if (heatPoints.length > 0) {
+                        const heatLayer = L.heatLayer(heatPoints, {
+                            radius: 25,
+                            blur: 20,
+                            maxZoom: 10,
+                            max: 1.0,
+                            gradient: {
+                                0.2: '#06b6d4', // Cyan (Düşük)
+                                0.4: '#3b82f6', // Mavi
+                                0.6: '#22c55e', // Yeşil
+                                0.8: '#f59e0b', // Turuncu
+                                1.0: '#ef4444'  // Kırmızı (Yüksek)
+                            }
+                        }).addTo(map);
+                    } else {
+                        alert("Veritabanında haritada gösterilecek konum verisi bulunamadı.");
+                    }
+                })
+                .catch(err => {
+                    console.error("Heatmap verisi çekilirken hata:", err);
+                    document.getElementById('heatmap-loading').style.display = 'none';
+                });
+        });
+    </script>
+}

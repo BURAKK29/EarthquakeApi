@@ -31,13 +31,20 @@ function initializeFamilyMapWithMembers(membersData) {
     function normalizeProvince(str) {
         if (!str) return '';
         return str
-            .toLowerCase()
+            .replace(/İ/g, 'i')
+            .replace(/I/g, 'i')
             .replace(/ı/g, 'i')
+            .replace(/Ğ/g, 'g')
             .replace(/ğ/g, 'g')
+            .replace(/Ü/g, 'u')
             .replace(/ü/g, 'u')
+            .replace(/Ş/g, 's')
             .replace(/ş/g, 's')
+            .replace(/Ö/g, 'o')
             .replace(/ö/g, 'o')
+            .replace(/Ç/g, 'c')
             .replace(/ç/g, 'c')
+            .toLowerCase()
             .trim();
     }
 
@@ -56,17 +63,23 @@ function initializeFamilyMapWithMembers(membersData) {
 
     membersData.forEach(member => {
         let lat = null, lon = null;
+        const latVal = member.Latitude !== undefined ? member.Latitude : member.latitude;
+        const lonVal = member.Longitude !== undefined ? member.Longitude : member.longitude;
+        const provinceVal = member.Province !== undefined ? member.Province : member.province;
+        const countryVal = member.Country !== undefined ? member.Country : member.country;
+        const firstNameVal = member.FirstName !== undefined ? member.FirstName : member.firstName;
+        const lastNameVal = member.LastName !== undefined ? member.LastName : member.lastName;
 
         // Önce veritabanı koordinatları
-        if (member.Latitude && member.Longitude) {
-            lat = parseFloat(member.Latitude);
-            lon = parseFloat(member.Longitude);
+        if (latVal && lonVal) {
+            lat = parseFloat(latVal);
+            lon = parseFloat(lonVal);
             if (isNaN(lat) || isNaN(lon)) { lat = null; lon = null; }
         }
 
         // Yoksa il adından bul
         if (lat === null) {
-            const coords = findCoords(member.Province);
+            const coords = findCoords(provinceVal);
             if (coords) { lat = coords[0]; lon = coords[1]; }
         }
 
@@ -74,16 +87,16 @@ function initializeFamilyMapWithMembers(membersData) {
             const marker = L.marker([lat, lon], { icon: customIcon }).addTo(map);
             marker.bindPopup(`
                 <div style="font-family:'Inter',sans-serif;min-width:140px">
-                    <strong style="color:#1e293b">${member.FirstName} ${member.LastName}</strong>
+                    <strong style="color:#1e293b">${firstNameVal} ${lastNameVal}</strong>
                     <hr style="margin:4px 0;border-color:#e2e8f0">
-                    <span style="color:#475569">📍 ${member.Province}</span><br>
-                    <span style="color:#94a3b8;font-size:.85em">${member.Country}</span>
+                    <span style="color:#475569">📍 ${provinceVal}</span><br>
+                    <span style="color:#94a3b8;font-size:.85em">${countryVal}</span>
                 </div>
             `);
             bounds.push([lat, lon]);
             markersAdded++;
         } else {
-            console.warn('Koordinat bulunamadı:', member.Province);
+            console.warn('Koordinat bulunamadı:', provinceVal);
         }
     });
 
