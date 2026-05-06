@@ -19,19 +19,19 @@
 <div align="center">
 
 ### 🔑 Giriş Sayfası
-![Login](docs/screenshots/login.png)
+![Login](docs/screenshots/loginn.png)
 
 ### 📊 Deprem Listesi — İstatistik Kartlar & Filtreler
-![Earthquake List](docs/screenshots/earthquake-list.png)
+![Earthquake List](docs/screenshots/earthquake-listt.png)
 
 ### 📈 Deprem Analizleri ve Trendler
-![Analytics](docs/screenshots/analytics.png)
+![Analytics](docs/screenshots/analyticss.png)
 
 ### 👨‍👩‍👧 Aile Üyeleri & Harita
-![Family Members](docs/screenshots/family-members.png)
+![Family Members](docs/screenshots/family-memberss.png)
 
 ### 👤 Profil Sayfası
-![Profile](docs/screenshots/profile.png)
+![Profile](docs/screenshots/profilee.png)
 
 </div>
 
