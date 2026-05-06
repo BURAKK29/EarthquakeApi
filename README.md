@@ -24,6 +24,9 @@
 ### 📊 Deprem Listesi — İstatistik Kartlar & Filtreler
 ![Earthquake List](docs/screenshots/earthquake-list.png)
 
+### 📈 Deprem Analizleri ve Trendler
+![Analytics](docs/screenshots/analytics.png)
+
 ### 👨‍👩‍👧 Aile Üyeleri & Harita
 ![Family Members](docs/screenshots/family-members.png)
 
